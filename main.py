@@ -141,25 +141,130 @@ class SudokuBoard :
     def setBoard(self, board):
         self.board = board
 
+    def checkBoard(self) : 
+        """
+        check if the problem is valid or not
+        """
+        for row in range(len(self.board)) : 
+            for col in range(len(self.board[row])) : 
+                if self.board[row][col] == 0 : 
+                    continue
+                if self.__checkRow(row, col) == False or self.__checkCol(row, col) == False or self.__checkSubGrid(row, col) == False :
+                    return False
+            return True
+    
+    def __checkRow(self, row, col) : 
+        for i in range(len(self.board[row])) : 
+            if i == col : 
+                continue
+            if self.board[row][i] == self.board[row][col] : 
+                return False
+        return True
+    
+    def __checkCol(self, row, col) :
+        for i in range(len(self.board)) : 
+            if i == row : 
+                continue
+            if self.board[i][col] == self.board[row][col] : 
+                return False
+        return True
+    
+    def __checkSubGrid(self, row, col) :
+        if self.size == 9 : 
+            if row < 3 : 
+                row = 0
+            elif row < 6 : 
+                row = 3
+            else : 
+                row = 6
+            if col < 3 : 
+                col = 0
+            elif col < 6 : 
+                col = 3
+            else : 
+                col = 6
+            for i in range(row, row+3) : 
+                for j in range(col, col+3) : 
+                    if i == row and j == col : 
+                        continue
+                    if self.board[i][j] == self.board[row][col] : 
+                        return False
+            return True
+        elif self.size == 16 : 
+            if row < 4 : 
+                row = 0
+            elif row < 8 : 
+                row = 4
+            elif row < 12 : 
+                row = 8
+            else : 
+                row = 12
+            if col < 4 : 
+                col = 0
+            elif col < 8 : 
+                col = 4
+            elif col < 12 : 
+                col = 8
+            else : 
+                col = 12
+            for i in range(row, row+4) : 
+                for j in range(col, col+4) : 
+                    if i == row and j == col : 
+                        continue
+                    if self.board[i][j] == self.board[row][col] : 
+                        return False
+            return True
+
 
 
 
 def main() :
+    #ask the user if they want to enter the problem or generate a random problem
+    choice = int(input("Enter 1 to enter the problem yourself or 2 to generate a random problem : "))
+    if choice != 1 and choice != 2 :
+        print("Invalid choice")
+        return
     #take input from the user for size of suduko board
     size = int(input("Enter the size of the sudoku board (9 or 16) : "))
-    #take input from the user for the fraction of the board to be filled
-    fraction = 1 - float(input("Enter the dfficulty of the randomly generated problem : "))
 
-    s = SudokuBoard(size)
-    print("BEFORE SOLVING ...")
-    print("\n\n")
-    s.setBoard(SudokuBoard.getSudokuProblem(fraction = fraction, size = size))
-    s.printBoard()
-    print("\nSolving ...")
-    print("\n\n\nAFTER SOLVING ...")
-    print("\n\n")
-    s.solveGraphColoring(size)
-    s.printBoard()
+    if choice == 1 :
+        #take input from the user for the problem
+        print("Enter the problem row wise with 0 for empty spaces")
+        board = []
+        for i in range(size) : 
+            row = list(map(int, input().split()))
+            board.append(row)
+        s = SudokuBoard(size)
+        s.setBoard(board)
+        while s.checkBoard() == False :
+            print("Invalid problem. Please enter again")
+            board = []
+            for i in range(size) : 
+                row = list(map(int, input().split()))
+                board.append(row)
+            s.setBoard(board)
+        print("\nBEFORE SOLVING ...")
+        print("\n\n")
+        s.printBoard()
+        print("\nSolving ...")
+        print("\n\n\nAFTER SOLVING ...")
+        print("\n\n")
+        s.solveGraphColoring(size)
+        s.printBoard()
+
+    if choice == 2 :
+        #take input from the user for the fraction of the board to be filled
+        fraction = float(input("Enter the dfficulty of the randomly generated problem (0.0 - 1.0) : "))
+        s = SudokuBoard(size)
+        print("\nBEFORE SOLVING ...")
+        print("\n\n")
+        s.setBoard(SudokuBoard.getSudokuProblem(fraction = fraction, size = size))
+        s.printBoard()
+        print("\nSolving ...")
+        print("\n\n\nAFTER SOLVING ...")
+        print("\n\n")
+        s.solveGraphColoring(size)
+        s.printBoard()
 
 if __name__ == "__main__" : 
     main()
