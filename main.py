@@ -1,55 +1,65 @@
 from sudoku_connections import SudokuConnections
+import random
 
 
 class SudokuBoard : 
-    def __init__(self) : 
+    def __init__(self, size = 9) : 
+        if size != 9 and size != 16:
+            raise ValueError("Size can only be 9 or 16")
 
-        self.board = self.getBoard()
+        self.size = size
+        self.board = self.getDefaultBoard()
         
-        self.sudokuGraph = SudokuConnections()
+        self.sudokuGraph = SudokuConnections(self.size)
         self.mappedGrid = self.__getMappedMatrix() # Maps all the ids to the position in the matrix
 
     def __getMappedMatrix(self) : 
-        matrix = [[0 for cols in range(9)] 
-        for rows in range(9)]
+        matrix = [[0 for cols in range(self.size)]  for rows in range(self.size)]
 
         count = 1
-        for rows in range(9) : 
-            for cols in range(9):
+        for rows in range(self.size) : 
+            for cols in range(self.size):
                 matrix[rows][cols] = count
                 count+=1
         return matrix
 
-    def getBoard(self) : 
+    def getDefaultBoard(self) : 
 
-        board = [
-            [0,0,0,4,0,0,0,0,0],
-            [4,0,9,0,0,6,8,7,0],
-            [0,0,0,9,0,0,1,0,0],
-            [5,0,4,0,2,0,0,0,9],
-            [0,7,0,8,0,4,0,6,0],
-            [6,0,0,0,3,0,5,0,2],
-            [0,0,1,0,0,7,0,0,0],
-            [0,4,3,2,0,0,6,0,5],
-            [0,0,0,0,0,5,0,0,0]
-        ]
+        board = [[0 for cols in range(self.size)]  for rows in range(self.size)]
         return board
 
     def printBoard(self) : 
         
-        print("    1 2 3     4 5 6     7 8 9")
-        for i in range(len(self.board)) : 
-            if i%3 == 0  :#and i != 0:
-                print("  - - - - - - - - - - - - - - ")
+        if self.size == 16 :
+            symbols = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "G"]
+            print("    1 2 3 4     5 6 7 8     9 A B C     D E F G")
+            for i in range(len(self.board)) : 
+                if i%4 == 0  :#and i != 0:
+                    print("  - - - - - - - - - - - - - - - - - - - - - - - - ")
 
-            for j in range(len(self.board[i])) : 
-                if j %3 == 0 :#and j != 0 : 
-                    print(" |  ", end = "")
-                if j == 8 :
-                    print(self.board[i][j]," | ", i+1)
-                else : 
-                    print(f"{ self.board[i][j] } ", end="")
-        print("  - - - - - - - - - - - - - - ")
+                for j in range(len(self.board[i])) : 
+                    if j %4 == 0 :#and j != 0 : 
+                        print(" |  ", end = "")
+                    if j == 15 :
+                        print(symbols[self.board[i][j]]," | ", symbols[i+1])
+                    else : 
+                        print(f"{ symbols[self.board[i][j]] } ", end="")
+            print("  - - - - - - - - - - - - - - - - - - - - - - - - ")
+        
+        elif self.size == 9 :
+            print("    1 2 3     4 5 6     7 8 9")
+            for i in range(len(self.board)) : 
+                if i%3 == 0  :#and i != 0:
+                    print("  - - - - - - - - - - - - - - ")
+
+                for j in range(len(self.board[i])) : 
+                    if j %3 == 0 :#and j != 0 : 
+                        print(" |  ", end = "")
+                    if j == 8 :
+                        print(self.board[i][j]," | ", i+1)
+                    else : 
+                        print(f"{ self.board[i][j] } ", end="")
+            print("  - - - - - - - - - - - - - - ")
 
     def is_Blank(self) : 
         
@@ -82,8 +92,8 @@ class SudokuBoard :
             print(":(")
             return False
         count = 1
-        for row in range(9) : 
-            for col in range(9) :
+        for row in range(self.size) : 
+            for col in range(self.size) :
                 self.board[row][col] = color[count]
                 count += 1
         return color
@@ -92,11 +102,17 @@ class SudokuBoard :
         
         if v == self.sudokuGraph.graph.totalV+1  : 
             return True
-        for c in range(1, m+1) : 
+        safecolors = []
+        for c in range(1, m+1):
             if self.__isSafe2Color(v, color, c, given) == True :
-                color[v] = c
-                if self.__graphColorUtility(m, color, v+1, given) : 
-                    return True
+                safecolors.append(c)
+        
+        random.shuffle(safecolors)
+
+        for c in safecolors :
+            color[v] = c
+            if self.__graphColorUtility(m, color, v+1, given) : 
+                return True
             if v not in given : 
                 color[v] = 0
 
@@ -111,17 +127,38 @@ class SudokuBoard :
             if color[i] == c and self.sudokuGraph.graph.isNeighbour(v, i) :
                 return False
         return True
+    
+    def getSudokuProblem(fraction = 0.2, size = 9):
+        s = SudokuBoard(size)
+        s.solveGraphColoring(size)
+        #zero out some of the values (probability = fraction)
+        for row in range(len(s.board)) :
+            for col in range(len(s.board[row])) : 
+                if random.random() < fraction : 
+                    s.board[row][col] = 0
+        return s.board
+    
+    def setBoard(self, board):
+        self.board = board
 
 
-def main() : 
-    s = SudokuBoard()
+
+
+def main() :
+    #take input from the user for size of suduko board
+    size = int(input("Enter the size of the sudoku board (9 or 16) : "))
+    #take input from the user for the fraction of the board to be filled
+    fraction = 1 - float(input("Enter the dfficulty of the randomly generated problem : "))
+
+    s = SudokuBoard(size)
     print("BEFORE SOLVING ...")
     print("\n\n")
+    s.setBoard(SudokuBoard.getSudokuProblem(fraction = fraction, size = size))
     s.printBoard()
     print("\nSolving ...")
     print("\n\n\nAFTER SOLVING ...")
     print("\n\n")
-    s.solveGraphColoring(m=9)
+    s.solveGraphColoring(size)
     s.printBoard()
 
 if __name__ == "__main__" : 

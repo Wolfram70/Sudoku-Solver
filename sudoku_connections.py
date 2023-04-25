@@ -1,13 +1,17 @@
 from graph import Graph
 
 class SudokuConnections : 
-    def __init__(self) :  # constructor
+    def __init__(self, size) :  # constructor
 
         self.graph = Graph() # Graph Object
 
-        self.rows = 9
-        self.cols = 9
-        self.total_blocks = self.rows*self.cols #81
+        if size != 9 and size != 16:
+            raise ValueError("Size can only be 9 or 16")
+
+        self.rows = size
+        self.cols = size
+        self.size = size
+        self.total_blocks = self.rows*self.cols #256
 
         self.__generateGraph() # Generates all the nodes
         self.connectEdges() # connects all the nodes acc to sudoku constraints
@@ -56,8 +60,8 @@ class SudokuConnections :
 
         head_connections = dict() # head : connections
 
-        for row in range(9) :
-            for col in range(9) : 
+        for row in range(self.rows) :
+            for col in range(self.cols) : 
                 
                 head = matrix[row][col] #id of the node
                 connections = self.__whatToConnect(matrix, row, col)
@@ -96,88 +100,289 @@ class SudokuConnections :
         block = []
 
         # ROWS
-        for c in range(cols+1, 9) : 
+        for c in range(cols+1, self.cols) : 
             row.append(matrix[rows][c])
         
         connections["rows"] = row
 
         # COLS 
-        for r in range(rows+1, 9):
+        for r in range(rows+1, self.rows):
             col.append(matrix[r][cols])
         
         connections["cols"] = col
 
         # BLOCKS
-        
-        if rows%3 == 0 : 
+        if self.size == 16:
+            if rows%4 == 0 : 
 
-            if cols%3 == 0 :
-                
-                block.append(matrix[rows+1][cols+1])
-                block.append(matrix[rows+1][cols+2])
-                block.append(matrix[rows+2][cols+1])
-                block.append(matrix[rows+2][cols+2])
+                if cols%4 == 0 :
+                    
+                    block.append(matrix[rows+1][cols+1])
+                    block.append(matrix[rows+1][cols+2])
+                    block.append(matrix[rows+1][cols+3])
+                    block.append(matrix[rows+2][cols+1])
+                    block.append(matrix[rows+2][cols+2])
+                    block.append(matrix[rows+2][cols+3])
+                    block.append(matrix[rows+3][cols+1])
+                    block.append(matrix[rows+3][cols+2])
+                    block.append(matrix[rows+3][cols+3])
 
-            elif cols%3 == 1 :
+                elif cols%4 == 1 :
+                    
+                    block.append(matrix[rows+1][cols-1])
+                    block.append(matrix[rows+1][cols+1])
+                    block.append(matrix[rows+1][cols+2])
+                    block.append(matrix[rows+2][cols-1])
+                    block.append(matrix[rows+2][cols+1])
+                    block.append(matrix[rows+2][cols+2])
+                    block.append(matrix[rows+3][cols-1])
+                    block.append(matrix[rows+3][cols+1])
+                    block.append(matrix[rows+3][cols+2])
+                    
+                elif cols%4 == 2 :
+                    
+                    block.append(matrix[rows+1][cols-2])
+                    block.append(matrix[rows+1][cols-1])
+                    block.append(matrix[rows+1][cols+1])
+                    block.append(matrix[rows+2][cols-2])
+                    block.append(matrix[rows+2][cols-1])
+                    block.append(matrix[rows+2][cols+1])
+                    block.append(matrix[rows+3][cols-2])
+                    block.append(matrix[rows+3][cols-1])
+                    block.append(matrix[rows+3][cols+1])
                 
-                block.append(matrix[rows+1][cols-1])
-                block.append(matrix[rows+1][cols+1])
-                block.append(matrix[rows+2][cols-1])
-                block.append(matrix[rows+2][cols+1])
-                
-            elif cols%3 == 2 :
-                
-                block.append(matrix[rows+1][cols-2])
-                block.append(matrix[rows+1][cols-1])
-                block.append(matrix[rows+2][cols-2])
-                block.append(matrix[rows+2][cols-1])
+                elif cols%4 == 3 :
+                    
+                    block.append(matrix[rows+1][cols-3])
+                    block.append(matrix[rows+1][cols-2])
+                    block.append(matrix[rows+1][cols-1])
+                    block.append(matrix[rows+2][cols-3])
+                    block.append(matrix[rows+2][cols-2])
+                    block.append(matrix[rows+2][cols-1])
+                    block.append(matrix[rows+3][cols-3])
+                    block.append(matrix[rows+3][cols-2])
+                    block.append(matrix[rows+3][cols-1])
 
-        elif rows%3 == 1 :
-            
-            if cols%3 == 0 :
-                
-                block.append(matrix[rows-1][cols+1])
-                block.append(matrix[rows-1][cols+2])
-                block.append(matrix[rows+1][cols+1])
-                block.append(matrix[rows+1][cols+2])
 
-            elif cols%3 == 1 :
+            elif rows%4 == 1 :
                 
-                block.append(matrix[rows-1][cols-1])
-                block.append(matrix[rows-1][cols+1])
-                block.append(matrix[rows+1][cols-1])
-                block.append(matrix[rows+1][cols+1])
-                
-            elif cols%3 == 2 :
-                
-                block.append(matrix[rows-1][cols-2])
-                block.append(matrix[rows-1][cols-1])
-                block.append(matrix[rows+1][cols-2])
-                block.append(matrix[rows+1][cols-1])
+                if cols%4 == 0 :
+                    
+                    block.append(matrix[rows-1][cols+1])
+                    block.append(matrix[rows-1][cols+2])
+                    block.append(matrix[rows-1][cols+3])
+                    block.append(matrix[rows+1][cols+1])
+                    block.append(matrix[rows+1][cols+2])
+                    block.append(matrix[rows+1][cols+3])
+                    block.append(matrix[rows+2][cols+1])
+                    block.append(matrix[rows+2][cols+2])
+                    block.append(matrix[rows+2][cols+3])
 
-        elif rows%3 == 2 :
-            
-            if cols%3 == 0 :
+                elif cols%4 == 1 :
+                    
+                    block.append(matrix[rows-1][cols-1])
+                    block.append(matrix[rows-1][cols+1])
+                    block.append(matrix[rows-1][cols+2])
+                    block.append(matrix[rows+1][cols-1])
+                    block.append(matrix[rows+1][cols+1])
+                    block.append(matrix[rows+1][cols+2])
+                    block.append(matrix[rows+2][cols-1])
+                    block.append(matrix[rows+2][cols+1])
+                    block.append(matrix[rows+2][cols+2])
+                    
+                elif cols%4 == 2 :
+                    
+                    block.append(matrix[rows-1][cols-2])
+                    block.append(matrix[rows-1][cols-1])
+                    block.append(matrix[rows-1][cols+1])
+                    block.append(matrix[rows+1][cols-2])
+                    block.append(matrix[rows+1][cols-1])
+                    block.append(matrix[rows+1][cols+1])
+                    block.append(matrix[rows+2][cols-2])
+                    block.append(matrix[rows+2][cols-1])
+                    block.append(matrix[rows+2][cols+1])
                 
-                block.append(matrix[rows-2][cols+1])
-                block.append(matrix[rows-2][cols+2])
-                block.append(matrix[rows-1][cols+1])
-                block.append(matrix[rows-1][cols+2])
+                elif cols%4 == 3 :
+                    
+                    block.append(matrix[rows-1][cols-3])
+                    block.append(matrix[rows-1][cols-2])
+                    block.append(matrix[rows-1][cols-1])
+                    block.append(matrix[rows+1][cols-3])
+                    block.append(matrix[rows+1][cols-2])
+                    block.append(matrix[rows+1][cols-1])
+                    block.append(matrix[rows+2][cols-3])
+                    block.append(matrix[rows+2][cols-2])
+                    block.append(matrix[rows+2][cols-1])
 
-            elif cols%3 == 1 :
+            elif rows%4 == 2 :
                 
-                block.append(matrix[rows-2][cols-1])
-                block.append(matrix[rows-2][cols+1])
-                block.append(matrix[rows-1][cols-1])
-                block.append(matrix[rows-1][cols+1])
+                if cols%4 == 0 :
+                    
+                    block.append(matrix[rows-2][cols+1])
+                    block.append(matrix[rows-2][cols+2])
+                    block.append(matrix[rows-2][cols+3])
+                    block.append(matrix[rows-1][cols+1])
+                    block.append(matrix[rows-1][cols+2])
+                    block.append(matrix[rows-1][cols+3])
+                    block.append(matrix[rows+1][cols+1])
+                    block.append(matrix[rows+1][cols+2])
+                    block.append(matrix[rows+1][cols+3])
+
+                elif cols%4 == 1 :
+                    
+                    block.append(matrix[rows-2][cols-1])
+                    block.append(matrix[rows-2][cols+1])
+                    block.append(matrix[rows-2][cols+2])
+                    block.append(matrix[rows-1][cols-1])
+                    block.append(matrix[rows-1][cols+1])
+                    block.append(matrix[rows-1][cols+2])
+                    block.append(matrix[rows+1][cols-1])
+                    block.append(matrix[rows+1][cols+1])
+                    block.append(matrix[rows+1][cols+2])
+                    
+                elif cols%4 == 2 :
+                    
+                    block.append(matrix[rows-2][cols-2])
+                    block.append(matrix[rows-2][cols-1])
+                    block.append(matrix[rows-2][cols+1])
+                    block.append(matrix[rows-1][cols-2])
+                    block.append(matrix[rows-1][cols-1])
+                    block.append(matrix[rows-1][cols+1])
+                    block.append(matrix[rows+1][cols-2])
+                    block.append(matrix[rows+1][cols-1])
+                    block.append(matrix[rows+1][cols+1])
                 
-            elif cols%3 == 2 :
+                elif cols%4 == 3 :
+                    
+                    block.append(matrix[rows-2][cols-3])
+                    block.append(matrix[rows-2][cols-2])
+                    block.append(matrix[rows-2][cols-1])
+                    block.append(matrix[rows-1][cols-3])
+                    block.append(matrix[rows-1][cols-2])
+                    block.append(matrix[rows-1][cols-1])
+                    block.append(matrix[rows+1][cols-3])
+                    block.append(matrix[rows+1][cols-2])
+                    block.append(matrix[rows+1][cols-1])
+
+            elif rows%4 == 3 :
                 
-                block.append(matrix[rows-2][cols-2])
-                block.append(matrix[rows-2][cols-1])
-                block.append(matrix[rows-1][cols-2])
-                block.append(matrix[rows-1][cols-1])
-        
+                if cols%4 == 0 :
+                    
+                    block.append(matrix[rows-3][cols+1])
+                    block.append(matrix[rows-3][cols+2])
+                    block.append(matrix[rows-3][cols+3])
+                    block.append(matrix[rows-2][cols+1])
+                    block.append(matrix[rows-2][cols+2])
+                    block.append(matrix[rows-2][cols+3])
+                    block.append(matrix[rows-1][cols+1])
+                    block.append(matrix[rows-1][cols+2])
+                    block.append(matrix[rows-1][cols+3])
+
+                elif cols%4 == 1 :
+                    
+                    block.append(matrix[rows-3][cols-1])
+                    block.append(matrix[rows-3][cols+1])
+                    block.append(matrix[rows-3][cols+2])
+                    block.append(matrix[rows-2][cols-1])
+                    block.append(matrix[rows-2][cols+1])
+                    block.append(matrix[rows-2][cols+2])
+                    block.append(matrix[rows-1][cols-1])
+                    block.append(matrix[rows-1][cols+1])
+                    block.append(matrix[rows-1][cols+2])
+                    
+                elif cols%4 == 2 :
+                    
+                    block.append(matrix[rows-3][cols-2])
+                    block.append(matrix[rows-3][cols-1])
+                    block.append(matrix[rows-3][cols+1])
+                    block.append(matrix[rows-2][cols-2])
+                    block.append(matrix[rows-2][cols-1])
+                    block.append(matrix[rows-2][cols+1])
+                    block.append(matrix[rows-1][cols-2])
+                    block.append(matrix[rows-1][cols-1])
+                    block.append(matrix[rows-1][cols+1])
+                
+                elif cols%4 == 3 :
+                    
+                    block.append(matrix[rows-3][cols-3])
+                    block.append(matrix[rows-3][cols-2])
+                    block.append(matrix[rows-3][cols-1])
+                    block.append(matrix[rows-2][cols-3])
+                    block.append(matrix[rows-2][cols-2])
+                    block.append(matrix[rows-2][cols-1])
+                    block.append(matrix[rows-1][cols-3])
+                    block.append(matrix[rows-1][cols-2])
+                    block.append(matrix[rows-1][cols-1])
+        elif self.size == 9:
+            if rows%3 == 0 : 
+
+                if cols%3 == 0 :
+                    
+                    block.append(matrix[rows+1][cols+1])
+                    block.append(matrix[rows+1][cols+2])
+                    block.append(matrix[rows+2][cols+1])
+                    block.append(matrix[rows+2][cols+2])
+
+                elif cols%3 == 1 :
+                    
+                    block.append(matrix[rows+1][cols-1])
+                    block.append(matrix[rows+1][cols+1])
+                    block.append(matrix[rows+2][cols-1])
+                    block.append(matrix[rows+2][cols+1])
+                    
+                elif cols%3 == 2 :
+                    
+                    block.append(matrix[rows+1][cols-2])
+                    block.append(matrix[rows+1][cols-1])
+                    block.append(matrix[rows+2][cols-2])
+                    block.append(matrix[rows+2][cols-1])
+
+            elif rows%3 == 1 :
+                
+                if cols%3 == 0 :
+                    
+                    block.append(matrix[rows-1][cols+1])
+                    block.append(matrix[rows-1][cols+2])
+                    block.append(matrix[rows+1][cols+1])
+                    block.append(matrix[rows+1][cols+2])
+
+                elif cols%3 == 1 :
+                    
+                    block.append(matrix[rows-1][cols-1])
+                    block.append(matrix[rows-1][cols+1])
+                    block.append(matrix[rows+1][cols-1])
+                    block.append(matrix[rows+1][cols+1])
+                    
+                elif cols%3 == 2 :
+                    
+                    block.append(matrix[rows-1][cols-2])
+                    block.append(matrix[rows-1][cols-1])
+                    block.append(matrix[rows+1][cols-2])
+                    block.append(matrix[rows+1][cols-1])
+
+            elif rows%3 == 2 :
+                
+                if cols%3 == 0 :
+                    
+                    block.append(matrix[rows-2][cols+1])
+                    block.append(matrix[rows-2][cols+2])
+                    block.append(matrix[rows-1][cols+1])
+                    block.append(matrix[rows-1][cols+2])
+
+                elif cols%3 == 1 :
+                    
+                    block.append(matrix[rows-2][cols-1])
+                    block.append(matrix[rows-2][cols+1])
+                    block.append(matrix[rows-1][cols-1])
+                    block.append(matrix[rows-1][cols+1])
+                    
+                elif cols%3 == 2 :
+                    
+                    block.append(matrix[rows-2][cols-2])
+                    block.append(matrix[rows-2][cols-1])
+                    block.append(matrix[rows-1][cols-2])
+                    block.append(matrix[rows-1][cols-1])
+
         connections["blocks"] = block
         return connections
 
@@ -192,8 +397,8 @@ class SudokuConnections :
         for rows in range(self.rows)]
 
         count = 1
-        for rows in range(9) :
-            for cols in range(9):
+        for rows in range(self.rows) :
+            for cols in range(self.cols):
                 matrix[rows][cols] = count
                 count+=1
         return matrix
