@@ -129,6 +129,9 @@ class SudokuBoard :
         return True
     
     def getSudokuProblem(fraction = 0.2, size = 9):
+        """
+        generate a sudoku problem with given fraction of values missing
+        """
         s = SudokuBoard(size)
         s.solveGraphColoring(size)
         #zero out some of the values (probability = fraction)
@@ -154,6 +157,7 @@ class SudokuBoard :
             return True
     
     def __checkRow(self, row, col) : 
+        #utlity function to check if the row is valid or not
         for i in range(len(self.board[row])) : 
             if i == col : 
                 continue
@@ -162,6 +166,7 @@ class SudokuBoard :
         return True
     
     def __checkCol(self, row, col) :
+        #utility function to check if the col is valid or not
         for i in range(len(self.board)) : 
             if i == row : 
                 continue
@@ -170,6 +175,7 @@ class SudokuBoard :
         return True
     
     def __checkSubGrid(self, row, col) :
+        #utility function to check if the subgrid is valid or not
         if self.size == 9 : 
             if row < 3 : 
                 row = 0

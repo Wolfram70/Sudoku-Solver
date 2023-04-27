@@ -112,7 +112,7 @@ class SudokuConnections :
         connections["cols"] = col
 
         # BLOCKS
-        if self.size == 16:
+        if self.size == 16: #16x16 sudoku
             if rows%4 == 0 : 
 
                 if cols%4 == 0 :
@@ -313,7 +313,7 @@ class SudokuConnections :
                     block.append(matrix[rows-1][cols-3])
                     block.append(matrix[rows-1][cols-2])
                     block.append(matrix[rows-1][cols-1])
-        elif self.size == 9:
+        elif self.size == 9: # 9x9 sudoku
             if rows%3 == 0 : 
 
                 if cols%3 == 0 :
